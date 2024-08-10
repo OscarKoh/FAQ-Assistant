@@ -3,7 +3,7 @@ import openai
 import pandas as pd
 import numpy as np
 
-openai.api_key = st.secrets["api_secret"]
+openai.api_key = st.secrets["mykey"]
 
 # Load the CSV file into a Pandas DataFrame
 file_path = 'qa_dataset_with_embeddings.csv'
