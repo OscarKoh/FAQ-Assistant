@@ -43,6 +43,11 @@ def main():
     # Input field for the user question
     user_question = st.text_input("Enter your question:", "")
 
+    # Clear button
+    if st.button("Clear"):
+        user_question = ""
+        st.experimental_rerun()
+
     if st.button("Generate Embedding"):
         if user_question:
             # Step 1: Generate the embedding for the new question
@@ -66,11 +71,36 @@ def main():
                 st.write(f"Question: {df.loc[most_similar_idx, 'Question']}")
                 st.write(f"Answer: {df.loc[most_similar_idx, 'Answer']}")
                 st.write(f"Similarity Score: {max_similarity:.2f}")
+
+                # Step 5: User rating for helpfulness
+                st.write("Was this answer helpful?")
+                if st.button("Yes"):
+                    st.success("Thank you for your feedback!")
+                if st.button("No"):
+                    st.warning("Thank you for your feedback! We'll try to improve.")
             else:
-                # Step 5: No relevant answer found
+                # Step 6: No relevant answer found
                 st.warning("I apologize, but I don't have information on that topic yet. Could you please ask other questions?")
         else:
             st.warning("Please enter a question.")
+
+    # FAQs Section
+    st.subheader("Common FAQs")
+    search_query = st.text_input("Search FAQs:")
+    if search_query:
+        filtered_df = df[df['Question'].str.contains(search_query, case=False)]
+        if not filtered_df.empty:
+            st.write("Matching FAQs:")
+            for i, row in filtered_df.iterrows():
+                st.write(f"Q: {row['Question']}")
+                st.write(f"A: {row['Answer']}")
+        else:
+            st.write("No matching FAQs found.")
+    else:
+        st.write("Frequently Asked Questions:")
+        for i, row in df.head(5).iterrows():  # Display the first 5 FAQs
+            st.write(f"Q: {row['Question']}")
+            st.write(f"A: {row['Answer']}")
 
 if __name__ == "__main__":
     main()
