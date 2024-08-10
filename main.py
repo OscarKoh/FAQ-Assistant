@@ -23,6 +23,7 @@ if not df.empty:
 else:
     st.error("The dataset is empty or could not be loaded.")
 
+# Function to get embedding from OpenAI
 def get_embedding(text, model="text-embedding-ada-002"):
     response = openai.Embedding.create(
       input=text,
@@ -46,6 +47,17 @@ def main():
             # Display the embedding
             st.write("Generated Embedding:")
             st.write(embedding)
+
+            # Optionally, you can compare this embedding with existing ones in the dataset
+            st.write("Comparing with existing questions in the dataset:")
+            df['Similarity'] = df['Question_Embedding'].apply(
+                lambda x: np.dot(x, embedding) / (np.linalg.norm(x) * np.linalg.norm(embedding))
+            )
+            st.write("Most similar question in the dataset:")
+            most_similar_idx = df['Similarity'].idxmax()
+            st.write(f"Question: {df.loc[most_similar_idx, 'Question']}")
+            st.write(f"Answer: {df.loc[most_similar_idx, 'Answer']}")
+            st.write(f"Similarity Score: {df.loc[most_similar_idx, 'Similarity']}")
         else:
             st.warning("Please enter a question.")
 
