@@ -32,32 +32,43 @@ def get_embedding(text, model="text-embedding-ada-002"):
     embedding = response['data'][0]['embedding']
     return embedding
 
+# Function to calculate cosine similarity
+def cosine_similarity(vec1, vec2):
+    return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+
 # Streamlit application
 def main():
     st.title("Health Q&A Embedding Generator")
-    
+
     # Input field for the user question
     user_question = st.text_input("Enter your question:", "")
 
     if st.button("Generate Embedding"):
         if user_question:
-            # Generate the embedding for the new question
-            embedding = get_embedding(user_question)
+            # Step 1: Generate the embedding for the new question
+            user_embedding = get_embedding(user_question)
 
-            # Display the embedding
-            st.write("Generated Embedding:")
-            st.write(embedding)
-
-            # Optionally, you can compare this embedding with existing ones in the dataset
-            st.write("Comparing with existing questions in the dataset:")
+            # Step 2: Calculate the cosine similarity between the user's question embedding and all question embeddings in the dataset
             df['Similarity'] = df['Question_Embedding'].apply(
-                lambda x: np.dot(x, embedding) / (np.linalg.norm(x) * np.linalg.norm(embedding))
+                lambda x: cosine_similarity(x, user_embedding)
             )
-            st.write("Most similar question in the dataset:")
+
+            # Step 3: Find the question with the highest similarity score
             most_similar_idx = df['Similarity'].idxmax()
-            st.write(f"Question: {df.loc[most_similar_idx, 'Question']}")
-            st.write(f"Answer: {df.loc[most_similar_idx, 'Answer']}")
-            st.write(f"Similarity Score: {df.loc[most_similar_idx, 'Similarity']}")
+            max_similarity = df.loc[most_similar_idx, 'Similarity']
+
+            # Define a threshold for relevance
+            similarity_threshold = 0.85  # You may need to experiment to find the best value
+
+            # Step 4: Check if the highest similarity is above the threshold
+            if max_similarity > similarity_threshold:
+                st.write("Most relevant question found in the dataset:")
+                st.write(f"Question: {df.loc[most_similar_idx, 'Question']}")
+                st.write(f"Answer: {df.loc[most_similar_idx, 'Answer']}")
+                st.write(f"Similarity Score: {max_similarity:.2f}")
+            else:
+                # Step 5: No relevant answer found
+                st.warning("I apologize, but I don't have information on that topic yet. Could you please ask other questions?")
         else:
             st.warning("Please enter a question.")
 
