@@ -90,12 +90,14 @@ def main():
             st.write("Matching FAQs:")
             for i, row in filtered_df.iterrows():
                 st.write(f"Q: {row['Question']}")
+                st.write(f"A: {row['Answer']}")
         else:
             st.write("No matching FAQs found.")
     else:
         st.write("Frequently Asked Questions:")
         for i, row in df.head(5).iterrows():  # Display the first 5 FAQs
             st.write(f"Q: {row['Question']}")
+            st.write(f"A: {row['Answer']}")
 
 if __name__ == "__main__":
     main()
