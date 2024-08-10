@@ -35,7 +35,7 @@ def cosine_similarity(vec1, vec2):
 
 # Streamlit application
 def main():
-    st.title("Health Q&A Embedding Generator")
+    st.title("Health Q&A Assistant")
 
     # Input field for the user question
     user_question = st.text_input("Enter your question:", "")
@@ -45,7 +45,7 @@ def main():
         user_question = ""
         st.experimental_rerun()
 
-    if st.button("Generate Embedding"):
+    if st.button("Generate Response"):
         if user_question:
             # Step 1: Generate the embedding for the new question
             user_embedding = get_embedding(user_question)
