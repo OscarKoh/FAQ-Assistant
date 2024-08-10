@@ -81,23 +81,24 @@ def main():
         else:
             st.warning("Please enter a question.")
 
-    # FAQs Section
+    # Interactive FAQs Section
     st.subheader("Common FAQs")
     search_query = st.text_input("Search FAQs:")
+    
     if search_query:
         filtered_df = df[df['Question'].str.contains(search_query, case=False)]
         if not filtered_df.empty:
             st.write("Matching FAQs:")
             for i, row in filtered_df.iterrows():
-                st.write(f"Q: {row['Question']}")
-                st.write(f"A: {row['Answer']}")
+                with st.expander(row['Question']):
+                    st.write(row['Answer'])
         else:
             st.write("No matching FAQs found.")
     else:
         st.write("Frequently Asked Questions:")
         for i, row in df.head(5).iterrows():  # Display the first 5 FAQs
-            st.write(f"Q: {row['Question']}")
-            st.write(f"A: {row['Answer']}")
+            with st.expander(row['Question']):
+                st.write(row['Answer'])
 
 if __name__ == "__main__":
     main()
